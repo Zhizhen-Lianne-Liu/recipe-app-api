@@ -1,4 +1,4 @@
-FROM python:3.9-alpine3.13 
+FROM python:3.9-alpine3.13
 LABEL maintainer="lianneliu"
 
 ENV PYTHONUNBUFFERED 1
@@ -24,6 +24,6 @@ RUN python -m venv /py && \
         --no-create-home \
         django-user
 
-ENV PATH="/py/bin:$PATH"
+ENV PATH = "/py/bin:$PATH"
 
 USER django-user
