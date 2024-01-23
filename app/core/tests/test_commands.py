@@ -4,13 +4,14 @@ Test custom django management commands
 
 from unittest.mock import patch
 
-from psycopg2 import OperationalError as Psycopg2Error  #  a possible error when we connect to database before it is ready
+from psycopg2 import OperationalError as Psycopg2Error
 
-from django.core.management import call_command  #  allows us to call command we are testing
+from django.core.management import call_command
 
-from django.db.utils import OperationalError  #  another possible error when we connect to database before it is ready
+from django.db.utils import OperationalError
 
-from django.test import SimpleTestCase  #  used to create unit test
+from django.test import SimpleTestCase
+
 
 @patch('core.management.commands.wait_for_db.Command.check')
 class CommandTests(SimpleTestCase):
@@ -25,7 +26,7 @@ class CommandTests(SimpleTestCase):
         patched_check.assert_called_once_with(databases=['default'])
 
     @patch('time.sleep')
-    def test_wait_for_db_delay(self, patched_sleep, patched_check):  #  make sure it is in this order since there is an outer patch which corresponds to the patch arg
+    def test_wait_for_db_delay(self, patched_sleep, patched_check):
         """Test waiting for database when getting operationalError"""
         patched_check.side_effect = [Psycopg2Error] * 2 + \
             [OperationalError] * 3 + [True]
