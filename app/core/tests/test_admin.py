@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.test import Client
 
 
-class AdminSitetests(TestCase):
+class AdminSiteTests(TestCase):
     """Tests for Django admin, make sure setUp is in camel casing or else it won't work?"""
 
     def setUp(self):
@@ -37,6 +37,13 @@ class AdminSitetests(TestCase):
         url = reverse('admin:core_user_change', args=[self.user.id])
         res = self.client.get(url)
 
-        self. assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
+
+    def test_create_user_page(self):
+        """Test the create user page works"""
+        url = reverse('admin:core_user_add')
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
 
 
