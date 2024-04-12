@@ -20,7 +20,7 @@ def create_user(**params):
 
 """Break tests into those which need authentication and those that don't"""
 
-class PublisUserApiTests(TestCase):
+class PublicUserApiTests(TestCase):
     """Test the public features of the user API"""
 
     def setUp(self):
@@ -35,8 +35,8 @@ class PublisUserApiTests(TestCase):
         }
         res = self.client.post(CREATE_USER_URL, payload)
 
-        self. assertEqual(res.status_code, status.HTTP_201_CREATED)
-        user  = get_user_model().objects.get(email=payload['email'])
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        user = get_user_model().objects.get(email=payload['email'])
         self.assertTrue(user.check_password(payload['password']))
         self.assertNotIn('password', res.data)
 
@@ -86,13 +86,20 @@ class PublisUserApiTests(TestCase):
         self.assertIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_create_toekn_bad_credentials(self):
+    def test_create_token_bad_credentials(self):
         """Test returns error if credentials invalid"""
         create_user(email='test@example.com', password='goodpass')
 
         payload = {'email': 'test@example.com', 'password': 'badpass'}
         res = self.client.post(TOKEN_URL, payload)
 
+        self.assertNotIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_token_email_not_found(self):
+        """Test error returned if user not found for given email."""
+        payload = {'email': 'test@example.com', 'password': 'pass123'}
+        res = self.client.post(TOKEN_URL, payload)
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -104,25 +111,25 @@ class PublisUserApiTests(TestCase):
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_retrive_user_unauthorized(self):
+    def test_retrieve_user_unauthorized(self):
         """Test authentication is required for users"""
         res = self.client.get(ME_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-class PrivateUserApi_Tests(TestCase):
+class PrivateUserApiTests(TestCase):
     """Test API requests that require authentication"""
 
     def setUp(self):
         self.user = create_user(
             email='test@example.com',
             password='testpass123',
-            name='Test Name'
+            name='Test Name',
         )
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
-    def test_retrive_profile_success(self):
+    def test_retreive_profile_success(self):
         """Test retrieving profile for logged in user"""
         res = self.client.get(ME_URL)
 
