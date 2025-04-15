@@ -36,7 +36,6 @@ def image_upload_url(recipe_id):
     """Create and return an image upload URL"""
     return reverse('recipe:recipe-upload-image', args=[recipe_id])
 
-
 def create_recipe(user, **params):
     """Create and return a sample recipe"""
     defaults = {
@@ -396,7 +395,7 @@ class ImageUploadTests(TestCase):
         """Test uploading an image to a recipe"""
         url = image_upload_url(self.recipe.id)
         with tempfile.NamedTemporaryFile(suffix='.jpg') as image_file:
-            img = Image.new('RBG', (10, 10))
+            img = Image.new('RGB', (10, 10))
             img.save(image_file, format='JPEG')
             image_file.seek(0)
             payload = {'image': image_file}
